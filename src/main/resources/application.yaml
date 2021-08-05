@@ -1,2 +1,10 @@
 server:
   port: 52000
+  servlet:
+    context-path: plc-client
+spring:
+  application:
+    name: plc-client
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
