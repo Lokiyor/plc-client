@@ -1,6 +1,7 @@
 package com.lokiy.iot.protocol.plc.client.service;
 
 import cn.hutool.core.util.StrUtil;
+import com.lokiy.iot.protocol.plc.client.common.constant.CommonConstant;
 import com.lokiy.iot.protocol.plc.client.common.enums.PLCDataTypeEnum;
 import com.lokiy.iot.protocol.plc.client.common.exception.BusinessException;
 import com.lokiy.iot.protocol.plc.client.common.util.PlcConnectionUtil;
@@ -8,6 +9,7 @@ import com.lokiy.iot.protocol.plc.client.domain.dto.PLCWriteSingleDTO;
 import lombok.Data;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.plc4x.java.PlcDriverManager;
 import org.apache.plc4x.java.api.PlcConnection;
 import org.apache.plc4x.java.api.messages.PlcWriteRequest;
 import org.apache.plc4x.java.api.messages.PlcWriteResponse;
@@ -18,6 +20,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @Author Lokiy
@@ -34,8 +37,16 @@ public class PLCWriteService {
      */
     @SneakyThrows
     public void singleWrite(PLCWriteSingleDTO dto) {
-        PLCDataTypeEnum.getPLCDataTypeEnum(dto.getType());
-        PlcConnection plcConnection = PlcConnectionUtil.getConnection(dto.getIp());
+//        PLCDataTypeEnum.getPLCDataTypeEnum(dto.getType());
+        String connectionIp = CommonConstant.S7_IP_PREFIX.concat(dto.getIp());
+        try (PlcConnection plcConnection = new PlcDriverManager().getConnection(connectionIp)) {
+            writeBody(dto, plcConnection);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void writeBody(PLCWriteSingleDTO dto, PlcConnection plcConnection) throws ExecutionException, InterruptedException {
         PlcWriteRequest writeRequest = writeRequest(dto, plcConnection);
         PlcWriteResponse response = writeRequest.execute().get();
         String fieldName = response.getFieldNames().toArray(new String[0])[0];
@@ -46,9 +57,10 @@ public class PLCWriteService {
     }
 
 
+
     private PlcWriteRequest writeRequest(PLCWriteSingleDTO dto, PlcConnection plcConnection){
         PlcWriteRequest.Builder builder = plcConnection.writeRequestBuilder();
-        builder.addItem(getKey(dto), getPos(dto), dto.getValue());
+        builder.addItem(getKey(dto), getPos(dto), Integer.valueOf(dto.getValue()));
         return builder.build();
     }
 
@@ -61,13 +73,26 @@ public class PLCWriteService {
     }
 
     private String getPos(PLCWriteSingleDTO dto){
-        return  "%DB.DB".concat(String.valueOf(dto.getDb()))
+        return  "%DB".concat(String.valueOf(dto.getDb()))
                 .concat(StrUtil.DOT)
+                .concat("DB")
                 .concat(String.valueOf(dto.getAddress()))
                 .concat(StrUtil.COLON)
-                .concat(dto.getType());
+                .concat(caseType(dto.getType()));
     }
 
+    private String caseType(String type){
+        switch (type){
+            case "VB":
+                return "SINT";
+            case "VW":
+                return "INT";
+            case "VD":
+                return "DINT";
+            default:
+                throw new BusinessException("格式不正确!");
+        }
+    }
 
 
     public void fixWrite() {

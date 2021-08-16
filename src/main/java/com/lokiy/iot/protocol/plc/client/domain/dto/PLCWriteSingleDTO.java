@@ -17,26 +17,26 @@ import javax.validation.constraints.NotNull;
 @ApiModel("plc单写对象")
 public class PLCWriteSingleDTO {
 
-    @ApiModelProperty("plc-ip")
+    @ApiModelProperty(value = "plc-ip", example = "127.0.0.1", required = true)
     @NotBlank(message = "plc-ip必填")
     private String ip;
 
-    @ApiModelProperty("plc数据库db")
+    @ApiModelProperty(value = "plc数据库db", example = "1", required = true)
     @NotNull(message = "plc数据库db必填")
     private Integer db;
 
-    @ApiModelProperty("读取位置")
+    @ApiModelProperty(value = "读取位置", example = "0", required = true)
     @NotNull(message = "plc读取位置必填")
     private Integer address;
 
     /**
      * {@link PLCDataTypeEnum}
      */
-    @ApiModelProperty("plc数据类型")
+    @ApiModelProperty(value = "plc数据类型", example = "VW", required = true, allowableValues = "VB,VW,VD")
     @NotBlank(message = "plc数据类型必填")
     private String type;
 
-    @ApiModelProperty("写入数值")
+    @ApiModelProperty(value = "写入数值", required = true, example = "1")
     @NotBlank(message = "写入数值不能为空")
     private String value;
 }

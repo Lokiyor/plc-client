@@ -33,13 +33,13 @@ public class PlcConnectionUtil {
      * @return plc连接
      */
     public static PlcConnection getConnection(String ip){
-        PlcConnection connection = plcCache.getIfPresent(ip);
-        if(Objects.nonNull(connection)){
-            return connection;
-        }
+//        PlcConnection connection = plcCache.getIfPresent(ip);
+//        if(Objects.nonNull(connection)){
+//            return connection;
+//        }
         String connectionIp = CommonConstant.S7_IP_PREFIX.concat(ip);
         try (PlcConnection plcConnection = new PlcDriverManager().getConnection(connectionIp)) {
-            plcCache.put(ip, plcConnection);
+//            plcCache.put(ip, plcConnection);
             return plcConnection;
         } catch (Exception e) {
             log.error("PLC连接失败------>{}",e.getMessage(), e);
