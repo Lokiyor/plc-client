@@ -1,7 +1,7 @@
 server:
   port: 52000
   servlet:
-    context-path: plc-client
+    context-path: /plc-client
 spring:
   application:
     name: plc-client

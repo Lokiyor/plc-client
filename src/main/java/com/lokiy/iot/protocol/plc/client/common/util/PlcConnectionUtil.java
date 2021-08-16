@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.plc4x.java.PlcDriverManager;
 import org.apache.plc4x.java.api.PlcConnection;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
@@ -15,6 +16,7 @@ import java.util.Objects;
  * @Date 2021/8/5 10:39
  * @Description
  */
+@Component
 @Slf4j
 public class PlcConnectionUtil {
 
