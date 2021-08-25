@@ -16,7 +16,10 @@ import org.apache.plc4x.java.api.messages.PlcWriteResponse;
 import org.apache.plc4x.java.api.types.PlcResponseCode;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
@@ -95,56 +98,111 @@ public class PLCWriteService {
     }
 
 
+    @SneakyThrows
     public void fixWrite() {
-        PlcConnection plcConnection = PlcConnectionUtil.getConnection("127.0.0.1");
+        PlcConnection plcConnection = PlcConnectionUtil.getConnection("192.168.1.100");
         PlcWriteRequest writeRequest = fixPoint(plcConnection);
-        CompletableFuture<? extends PlcWriteResponse> asyncResponse = writeRequest.execute();
-        asyncResponse.whenComplete((response, throwable) -> {
-            for (String fieldName : response.getFieldNames()) {
-                if(response.getResponseCode(fieldName) == PlcResponseCode.OK) {
-                    log.info("Value[" + fieldName + "]: updated");
-                } else {
-                    log.error("Error[" + fieldName + "]: " + response.getResponseCode(fieldName).name());
-                }
+//        CompletableFuture<? extends PlcWriteResponse> asyncResponse = writeRequest.execute();
+//        asyncResponse.whenComplete((response, throwable) -> {
+//            for (String fieldName : response.getFieldNames()) {
+//                if(response.getResponseCode(fieldName) == PlcResponseCode.OK) {
+//                    log.info("Value[" + fieldName + "]: updated");
+//                } else {
+//                    log.error("Error[" + fieldName + "]: " + response.getResponseCode(fieldName).name());
+//                }
+//            }
+//        });
+        PlcWriteResponse response = writeRequest.execute().get();
+        for(String fieldName : response.getFieldNames()){
+            if(response.getResponseCode(fieldName) != PlcResponseCode.OK) {
+                log.error("PLC_ERROR [{}]: {}", fieldName, response.getResponseCode(fieldName).name());
             }
-        });
+        }
     }
 
     private PlcWriteRequest fixPoint( PlcConnection plcConnection){
         PlcWriteRequest.Builder builder = plcConnection.writeRequestBuilder();
-        builder.addItem("1", "%DB.DB1.0:INT", 0);
-        builder.addItem("2", "%DB.DB1.2:INT", 0);
-        builder.addItem("3", "%DB.DB1.4:INT", 288);
-        builder.addItem("4", "%DB.DB1.6:INT", 20108);
+        builder.addItem("110", "%DB14.DB110:INT", 0);
+        builder.addItem("112", "%DB14.DB112:INT", 0);
+        builder.addItem("114", "%DB14.DB114:INT", 288);
+        builder.addItem("116", "%DB14.DB116:INT", 20108);
 
-        builder.addItem("5", "%DB.DB1.16:INT", 1);
+        builder.addItem("88", "%DB14.DB88:INT", new Random().nextInt(4) + 1);
+        builder.addItem("90", "%DB14.DB90:INT", new Random().nextInt(2));
+        builder.addItem("92", "%DB14.DB92:INT", new Random().nextInt(4) + 1);
+        builder.addItem("94", "%DB14.DB94:INT", new Random().nextInt(2));
 
-        builder.addItem("6", "%DB.DB1.32:INT", new Random().nextInt(2));
-        builder.addItem("7", "%DB.DB1.34:INT", new Random().nextInt(4) + 1);
-        builder.addItem("8", "%DB.DB1.36:INT", new Random().nextInt(2) + 1);
-        builder.addItem("9", "%DB.DB1.38:INT", new Random().nextInt(2));
-
-        builder.addItem("10", "%DB.DB2.0:INT", new Random().nextInt(2));
-        builder.addItem("11", "%DB.DB2.2:INT", new Random().nextInt(200) + 100);
-        builder.addItem("12", "%DB.DB2.4:INT", new Random().nextInt(20) + 10);
+        builder.addItem("102", "%DB14.DB102:INT", new Random().nextInt(3) + 1);
+        builder.addItem("104", "%DB14.DB104:INT", new Random().nextInt(2));
 
 
-        builder.addItem("13", "%DB.DB2.16:LONG", 490L);
-        builder.addItem("14", "%DB.DB2.20:LONG", 760L);
-        builder.addItem("15", "%DB.DB2.24:LONG", 6500L);
+        builder.addItem("124", "%DB14.DB124:INT", new Random().nextInt(500));
+        builder.addItem("126", "%DB14.DB126:INT", new Random().nextInt(500));
+        builder.addItem("128", "%DB14.DB128:INT", new Random().nextInt(500));
+        builder.addItem("130", "%DB14.DB130:INT", new Random().nextInt(500));
+        builder.addItem("132", "%DB14.DB132:INT", new Random().nextInt(100));
 
-        builder.addItem("16", "%DB.DB1.48:INT", new Random().nextInt(2));
-        builder.addItem("17", "%DB.DB1.50:INT", new Random().nextInt(4) + 1);
-        builder.addItem("18", "%DB.DB1.52:INT", new Random().nextInt(2) + 1);
-        builder.addItem("19", "%DB.DB1.54:INT", new Random().nextInt(2));
-        builder.addItem("20", "%DB.DB1.56:INT", new Random().nextInt(40));
+        builder.addItem("140", "%DB14.DB140:INT", new Random().nextInt(2));
+
+        builder.addItem("314", "%DB14.DB314:INT", new Random().nextInt(50));
+        builder.addItem("316", "%DB14.DB316:INT", new Random().nextInt(40));
+        builder.addItem("318", "%DB14.DB318:INT", new Random().nextInt(2));
+        builder.addItem("320", "%DB14.DB320:INT", new Random().nextInt(2));
+
+        builder.addItem("350", "%DB14.DB350:INT", new Random().nextInt(400));
+
+        builder.addItem("358", "%DB14.DB358:INT", new Random().nextInt(2) + 1);
+        builder.addItem("360", "%DB14.DB360:INT", new Random().nextInt(100));
+
+        builder.addItem("368", "%DB14.DB368:INT", new Random().nextInt(100) + 400);
+
+        builder.addItem("372", "%DB14.DB372:INT", new Random().nextInt(100) + 400);
+
+        builder.addItem("380", "%DB14.DB380:INT", new Random().nextInt(400));
+
+        builder.addItem("386", "%DB14.DB386:INT", new Random().nextInt(2));
+        builder.addItem("388", "%DB14.DB388:INT", new Random().nextInt(32));
+
+        builder.addItem("422", "%DB14.DB422:INT", new Random().nextInt(10000));
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime of = LocalDateTime.of(2021, 8, 25, 0, 0, 0, 0);
+        long hours = Duration.between(of, now).toHours();
+
+        builder.addItem("442", "%DB14.DB442:DINT", (long) ( hours * 0.3));
+        builder.addItem("448", "%DB14.DB448:DINT", (long) ( hours * 0.4));
+        builder.addItem("464", "%DB14.DB464:DINT", hours);
+        builder.addItem("496", "%DB14.DB496:INT", new Random().nextInt(2));
 
 
-        builder.addItem("21", "%DB.DB3.0:INT", new Random().nextInt(100) + 100);
-        builder.addItem("22", "%DB.DB3.2:INT", new Random().nextInt(100) + 300);
-        builder.addItem("23", "%DB.DB3.4:INT", new Random().nextInt(100) + 200);
-        builder.addItem("24", "%DB.DB3.6:INT", new Random().nextInt(100) + 400);
+        builder.addItem("500", "%DB14.DB500:INT", new Random().nextInt(200));
+        builder.addItem("502", "%DB14.DB502:INT", new Random().nextInt(1000));
+        builder.addItem("508", "%DB14.DB508:INT", new Random().nextInt(1000));
+        builder.addItem("510", "%DB14.DB510:INT", new Random().nextInt(1500));
+
+        builder.addItem("530", "%DB14.DB530:INT", new Random().nextInt(2));
+
+
+        builder.addItem("598", "%DB14.DB598:INT", new Random().nextInt(2)  == 1 ? new Random().nextInt(200) * (-1) : new Random().nextInt(500));
+        builder.addItem("600", "%DB14.DB600:INT", new Random().nextInt(2)  == 1 ? new Random().nextInt(200) * (-1) : new Random().nextInt(500));
+        builder.addItem("602", "%DB14.DB602:INT", new Random().nextInt(100));
+        builder.addItem("604", "%DB14.DB604:INT", new Random().nextInt(2)  == 1 ? new Random().nextInt(200) * (-1) : new Random().nextInt(500));
+
+        builder.addItem("608", "%DB14.DB608:INT", new Random().nextInt(2));
+        builder.addItem("610", "%DB14.DB610:INT", new Random().nextInt(250) + 100);
+
+
+        builder.addItem("620", "%DB14.DB620:INT", new Random().nextInt(2));
+        builder.addItem("622", "%DB14.DB622:INT", new Random().nextInt(2));
+        builder.addItem("624", "%DB14.DB624:INT", new Random().nextInt(2));
+        builder.addItem("626", "%DB14.DB626:INT", new Random().nextInt(2));
+
+        builder.addItem("632", "%DB14.DB632:INT", new Random().nextInt(2));
 
         return builder.build();
+    }
+
+    public void batchWrite(List<PLCWriteSingleDTO> dto) {
+        dto.forEach(this::singleWrite);
     }
 }

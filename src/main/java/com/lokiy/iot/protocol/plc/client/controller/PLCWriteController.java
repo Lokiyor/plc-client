@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
  * @Author Lokiy
  * @Date 2021/8/5 10:33
@@ -31,6 +33,13 @@ public class PLCWriteController extends BaseController {
     @PostMapping("/single")
     public R singleWrite(@RequestBody @Validated PLCWriteSingleDTO dto){
         plcWriteService.singleWrite(dto);
+        return R.success();
+    }
+
+    @ApiOperation("plc批量写操作接口")
+    @PostMapping("/batch")
+    public R batchWrite(@RequestBody List<PLCWriteSingleDTO> dto){
+        plcWriteService.batchWrite(dto);
         return R.success();
     }
 }
